@@ -24,6 +24,7 @@
             </intent-filter>
         </activity>
         <activity android:name="app.allever.android.compose.sample.app.tweet.module.login.LoginActivity" />
+        <activity android:name="app.allever.android.compose.sample.app.tweet.module.login.AccountLoginActivity" />
     </application>
 
 </manifest>
