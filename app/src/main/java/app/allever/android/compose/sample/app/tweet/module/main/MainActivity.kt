@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +33,7 @@ import app.allever.android.compose.sample.app.tweet.base.AppBaseActivity
 import app.allever.android.compose.sample.app.tweet.ui.theme.ColorTextPrimary
 import app.allever.android.compose.sample.app.tweet.ui.theme.ColorTextPrimaryReverse
 import app.allever.android.lib.core.ext.toast
+import kotlinx.coroutines.launch
 
 class MainActivity : AppBaseActivity() {
     override fun init() {
@@ -44,33 +46,33 @@ class MainActivity : AppBaseActivity() {
     override fun Content() {
         val pageState = rememberPagerState { 4 }
         val tabState = remember { mutableIntStateOf(0) }
+        val scope = rememberCoroutineScope()
+
+        // 监听 HorizontalPager 页面滑动，同步更新底部导航高亮
+        LaunchedEffect(pageState) {
+            snapshotFlow { pageState.currentPage }.collect { page ->
+                tabState.intValue = page
+            }
+        }
+
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
             HorizontalPager(pageState) {
-
-                //页面切换监听
-                LaunchedEffect(pageState) {
-                    // Collect from the pager state a snapshotFlow reading the currentPage
-                    snapshotFlow { pageState.currentPage }.collect { page ->
-                        tabState.intValue = page
-                    }
-                }
-
-                when(it) {
-                    0 -> {
-                        HomePage()
-                    }
-                    1 -> {
-                        SearchPage()
-                    }
-                    2 -> {
-                        NotificationPage()
-                    }
-                    3 -> {
-                        ProfilePage()
-                    }
+                when (it) {
+                    0 -> HomePage()
+                    1 -> SearchPage()
+                    2 -> NotificationPage()
+                    3 -> ProfilePage()
                 }
             }
-            BottomNavigation(tabState.intValue)
+            BottomNavigation(
+                index = tabState.intValue,
+                onTabSelected = { index ->
+                    scope.launch { pageState.animateScrollToPage(index) }
+                },
+                onAddClick = {
+                    toast("add")
+                }
+            )
         }
     }
 
@@ -95,7 +97,11 @@ class MainActivity : AppBaseActivity() {
     }
 
     @Composable
-    fun BottomNavigation(index: Int) {
+    fun BottomNavigation(
+        index: Int,
+        onTabSelected: (Int) -> Unit,
+        onAddClick: () -> Unit
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -108,7 +114,7 @@ class MainActivity : AppBaseActivity() {
                     .weight(1f)
                     .fillMaxHeight()
                     .clickable {
-                        toast("Home")
+                        onTabSelected(0)
                     }) {
                 Image(
                     painter = painterResource(id = R.drawable.twe_ic_nav_home),
@@ -123,7 +129,7 @@ class MainActivity : AppBaseActivity() {
                     .weight(1f)
                     .fillMaxHeight()
                     .clickable {
-                        toast("search")
+                        onTabSelected(1)
                     }) {
                 Image(
                     painter = painterResource(id = R.drawable.twe_ic_nav_search),
@@ -138,7 +144,7 @@ class MainActivity : AppBaseActivity() {
                     .weight(1f)
                     .fillMaxHeight()
                     .clickable {
-                        toast("add")
+                        onAddClick()
                     }) {
                 Box(
                     modifier = Modifier
@@ -162,7 +168,7 @@ class MainActivity : AppBaseActivity() {
                     .weight(1f)
                     .fillMaxHeight()
                     .clickable {
-                        toast("notification")
+                        onTabSelected(2)
                     }) {
                 Image(
                     painter = painterResource(id = R.drawable.twe_ic_nav_heart),
@@ -177,7 +183,7 @@ class MainActivity : AppBaseActivity() {
                     .weight(1f)
                     .fillMaxHeight()
                     .clickable {
-                        toast("profile")
+                        onTabSelected(3)
                     }) {
                 Image(
                     painter = painterResource(id = R.drawable.twe_ic_nav_profile),
