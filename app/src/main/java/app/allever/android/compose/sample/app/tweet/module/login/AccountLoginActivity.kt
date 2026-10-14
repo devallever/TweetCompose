@@ -38,12 +38,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.allever.android.compose.sample.app.tweet.R
 import app.allever.android.compose.sample.app.tweet.base.AppBaseActivity
+import app.allever.android.compose.sample.app.tweet.module.main.MainActivity
 import app.allever.android.compose.sample.app.tweet.ui.theme.ColorIconPrimary
 import app.allever.android.compose.sample.app.tweet.ui.theme.ColorPageBgPrimary
 import app.allever.android.compose.sample.app.tweet.ui.theme.ColorPageBgPrimaryReverse
 import app.allever.android.compose.sample.app.tweet.ui.theme.ColorTextPrimary
 import app.allever.android.compose.sample.app.tweet.ui.theme.ColorTextPrimaryReverse
 import app.allever.android.lib.core.ext.toast
+import app.allever.android.lib.core.helper.ActivityHelper
 
 class AccountLoginActivity : AppBaseActivity() {
     override fun init() {
@@ -144,7 +146,7 @@ class AccountLoginActivity : AppBaseActivity() {
                             return@FilledTonalButton
                         }
 
-                        toast("登录成功")
+                        ActivityHelper.startActivity<MainActivity>()
                     },
                     colors = ButtonDefaults.filledTonalButtonColors(ColorPageBgPrimaryReverse),
                     modifier = Modifier

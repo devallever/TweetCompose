@@ -25,6 +25,7 @@
         </activity>
         <activity android:name="app.allever.android.compose.sample.app.tweet.module.login.LoginActivity" />
         <activity android:name="app.allever.android.compose.sample.app.tweet.module.login.AccountLoginActivity" />
+        <activity android:name="app.allever.android.compose.sample.app.tweet.module.main.MainActivity" />
     </application>
 
 </manifest>

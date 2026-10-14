@@ -7,4 +7,51 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="page_bg">#FFFFFF</color>
+    <color name="dialog_bg">#F2F2F2</color>
+    <color name="surface_bg">#F7F7F7</color>
+    <color name="surface_variant">#F2F2F2</color>
+    <color name="card_bg">#FFFFFF</color>
+    <color name="chat_bubble_received">#F2F2F2</color>
+    <color name="surface_dark">#FFFFFF</color>
+
+    <color name="text_primary">#0F1419</color>
+    <color name="text_primary_reversed">#FFFFFF</color>
+    <color name="text_secondary">#536471</color>
+    <color name="text_tertiary">#8B98A5</color>
+    <color name="text_hint">#6B7280</color>
+    <color name="text_disabled">#B0B5BD</color>
+
+    <color name="divider">#E0E0E0</color>
+    <color name="divider_variant">#EEEEEE</color>
+
+    <color name="border">#DDDDDD</color>
+    <color name="border_variant">#E5E5E5</color>
+
+    <color name="icon_primary">#0F1419</color>
+    <color name="icon_reversed_primary">#FFFFFF</color>
+    <color name="icon_secondary">#536471</color>
+    <color name="icon_tertiary">#8B98A5</color>
+
+    <color name="scrim">#140F1419</color>
+
+    <color name="overlay_black">#14000000</color>
+
+    <color name="media_overlay">#80000000</color>
+
+    <color name="color_accent">#1D9BF0</color>
+
+    <!-- 主要按钮背景：浅色=主题色，深色=白色 -->
+    <color name="button_primary_bg">#1D9BF0</color>
+    <color name="color_gold">#E2A172</color>
+    <color name="color_error">#EF4444</color>
+    <color name="color_success">#6AAB73</color>
+    <color name="color_like">#E0245E</color>
+
+    <color name="color_red">#F4212E</color>
+    <color name="color_white">#FFFFFF</color>
+    <color name="color_black">#000000</color>
+
+    <color name="color_transparent">#00000000</color>
 </resources>
