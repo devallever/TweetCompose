@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:name=".TweetApp"
         android:allowBackup="true"
@@ -26,6 +28,7 @@
         <activity android:name="app.allever.android.compose.sample.app.tweet.module.login.LoginActivity" />
         <activity android:name="app.allever.android.compose.sample.app.tweet.module.login.AccountLoginActivity" />
         <activity android:name="app.allever.android.compose.sample.app.tweet.module.main.MainActivity" />
+        <activity android:name="app.allever.android.compose.sample.app.tweet.DebugActivity" />
     </application>
 
 </manifest>

@@ -23,11 +23,12 @@ class SplashActivity : AppBaseActivity() {
     override fun init() {
         lifecycleScope.launch {
             delay(1000)
-            ActivityHelper.startActivity<LoginActivity>()
+            ActivityHelper.startActivity<DebugActivity>()
             finish()
         }
     }
 
+    @Preview
     @Composable
     override fun Content() {
         Image(
@@ -36,20 +37,5 @@ class SplashActivity : AppBaseActivity() {
             modifier = Modifier.size(128.dp),
             alignment = androidx.compose.ui.Alignment.Center
         )
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!", modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    TweetComposeTheme {
-        Greeting("Android")
     }
 }
