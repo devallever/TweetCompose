@@ -13,18 +13,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,18 +35,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import app.allever.android.compose.sample.app.tweet.R
 import app.allever.android.compose.sample.app.tweet.base.AppBaseActivity
 import app.allever.android.compose.sample.app.tweet.module.main.MainActivity
 import app.allever.android.compose.sample.app.tweet.ui.theme.ColorIconPrimary
-import app.allever.android.compose.sample.app.tweet.ui.theme.ColorPageBgPrimary
 import app.allever.android.compose.sample.app.tweet.ui.theme.ColorPageBgPrimaryReverse
 import app.allever.android.compose.sample.app.tweet.ui.theme.ColorTextPrimary
 import app.allever.android.compose.sample.app.tweet.ui.theme.ColorTextPrimaryReverse
 import app.allever.android.lib.core.ext.toast
 import app.allever.android.lib.core.helper.ActivityHelper
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 
 class AccountLoginActivity : AppBaseActivity() {
+    private val viewModel: AccountLoginViewModel by lazy { AccountLoginViewModel() }
     override fun init() {
 
     }
@@ -55,8 +61,19 @@ class AccountLoginActivity : AppBaseActivity() {
     @Preview
     @Composable
     override fun Content() {
-        val accountState = remember { mutableStateOf("") }
-        val passwordState = remember { mutableStateOf("") }
+        LaunchedEffect(Unit) {
+            viewModel.event.collect {
+                when (it) {
+                    is AccountLoginOnceEvent.LoginSuccess -> {
+                        ActivityHelper.startActivity<MainActivity>()
+                        finish()
+                    }
+                }
+            }
+        }
+
+
+        val uiState = viewModel.uiState
         Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
             TopBar("账号密码登录")
             Column(
@@ -90,13 +107,13 @@ class AccountLoginActivity : AppBaseActivity() {
                     BasicTextField(
                         textStyle = TextStyle(color = ColorTextPrimary),
                         singleLine = true,
-                        value = accountState.value,
-                        onValueChange = { accountState.value = it },
+                        value = uiState.account,
+                        onValueChange = { viewModel.dispatchEvent(AccountLoginEvent.UpdateAccount(it)) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 12.dp)
                     ) {
-                        if (accountState.value.isEmpty()) {
+                        if (uiState.account.isEmpty()) {
                             Text(
                                 text = "请输入账号", color = Color(0xffb4b4b4)
                             )
@@ -124,13 +141,13 @@ class AccountLoginActivity : AppBaseActivity() {
                     BasicTextField(
                         textStyle = TextStyle(color = ColorTextPrimary),
                         singleLine = true,
-                        value = passwordState.value,
-                        onValueChange = { passwordState.value = it },
+                        value = uiState.password,
+                        onValueChange = { viewModel.dispatchEvent(AccountLoginEvent.UpdatePassword(it)) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 12.dp)
                     ) {
-                        if (passwordState.value.isEmpty()) {
+                        if (uiState.password.isEmpty()) {
                             Text(
                                 text = "请输入密码", color = Color(0xffb4b4b4)
                             )
@@ -141,12 +158,12 @@ class AccountLoginActivity : AppBaseActivity() {
 
                 FilledTonalButton(
                     onClick = {
-                        if (accountState.value.isEmpty() || passwordState.value.isEmpty()) {
-                            toast("请输入账号和密码")
-                            return@FilledTonalButton
-                        }
+//                        if (uiState.account.isEmpty() || uiState.password.isEmpty()) {
+//                            toast("请输入账号和密码")
+//                            return@FilledTonalButton
+//                        }
 
-                        ActivityHelper.startActivity<MainActivity>()
+                        viewModel.dispatchEvent(AccountLoginEvent.Login)
                     },
                     colors = ButtonDefaults.filledTonalButtonColors(ColorPageBgPrimaryReverse),
                     modifier = Modifier
@@ -198,4 +215,52 @@ class AccountLoginActivity : AppBaseActivity() {
 
 
     }
+}
+
+data class AccountLoginUiState (
+    val account: String = "",
+    val password: String = "",
+    val isLogged: Boolean = false
+)
+
+class AccountLoginViewModel: ViewModel() {
+
+    var uiState by mutableStateOf(AccountLoginUiState())
+    private set
+
+    private var _event =  Channel<AccountLoginOnceEvent>(Channel.BUFFERED)
+    val event = _event.receiveAsFlow()
+
+    fun dispatchEvent(event: AccountLoginEvent) {
+        when (event) {
+            is AccountLoginEvent.Login -> {
+                viewModelScope.launch {
+                    if (uiState.account.isEmpty() || uiState.password.isEmpty()) {
+                        toast("请输入账号和密码")
+                        return@launch
+                    }
+                    delay(2000)
+                    toast("登录成功")
+                    _event.send(AccountLoginOnceEvent.LoginSuccess)
+                }
+            }
+            is AccountLoginEvent.UpdateAccount -> {
+                uiState = uiState.copy(account = event.account)
+            }
+            is AccountLoginEvent.UpdatePassword -> {
+                uiState = uiState.copy(password = event.password)
+            }
+        }
+    }
+
+}
+
+sealed class AccountLoginOnceEvent {
+    object LoginSuccess : AccountLoginOnceEvent()
+}
+
+sealed class AccountLoginEvent() {
+    object Login : AccountLoginEvent()
+    data class UpdateAccount(val account: String) : AccountLoginEvent()
+    data class UpdatePassword(val password: String) : AccountLoginEvent()
 }
