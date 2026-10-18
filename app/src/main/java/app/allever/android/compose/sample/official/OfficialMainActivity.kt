@@ -16,11 +16,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import app.allever.android.compose.sample.app.tweet.base.AppBaseActivity
 import app.allever.android.compose.sample.app.tweet.ui.theme.ColorTextPrimary
 import app.allever.android.compose.sample.official.data.FunctionItem
+import app.allever.android.lib.core.helper.ActivityHelper
 
-class OfficialMainActivity: AppBaseActivity() {
+class OfficialMainActivity : AppBaseActivity() {
+    //viewmodel
+
     override fun init() {
 
     }
@@ -29,8 +33,11 @@ class OfficialMainActivity: AppBaseActivity() {
     @Composable
     override fun Content() {
         val functionList = mutableListOf<FunctionItem>().apply {
-            add(FunctionItem("登录页", "viewModel + mutableStateOf + uiState") {
-
+            add(FunctionItem("登录页", "viewModel + mutableStateOf + uiState + share + CHANNEL") {
+                ActivityHelper.startActivity<LoginActivity>()
+            })
+            add(FunctionItem("登录页", "viewModel + mutableStateOf + livedata") {
+                ActivityHelper.startActivity<LoginActivity2>()
             })
         }
 
