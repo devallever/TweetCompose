@@ -21,6 +21,8 @@ import app.allever.android.compose.sample.app.tweet.module.login.AccountLoginAct
 import app.allever.android.compose.sample.app.tweet.module.login.LoginActivity
 import app.allever.android.compose.sample.app.tweet.module.main.MainActivity
 import app.allever.android.compose.sample.app.tweet.ui.theme.ColorTextPrimary
+import app.allever.android.compose.sample.official.OfficialMainActivity
+import app.allever.android.compose.sample.official.data.FunctionItem
 import app.allever.android.lib.core.helper.ActivityHelper
 
 class DebugActivity : AppBaseActivity() {
@@ -32,6 +34,9 @@ class DebugActivity : AppBaseActivity() {
     @Composable
     override fun Content() {
         val functionList = mutableListOf<FunctionItem>().apply {
+            add(FunctionItem("示例代码") {
+                ActivityHelper.startActivity<OfficialMainActivity>()
+            })
             add(FunctionItem("登录页") {
                 ActivityHelper.startActivity<LoginActivity>()
             })
@@ -80,7 +85,3 @@ class DebugActivity : AppBaseActivity() {
         }
     }
 }
-
-class FunctionItem(
-    val title: String = "", val desc: String = "", val action: () -> Unit = {}
-)
